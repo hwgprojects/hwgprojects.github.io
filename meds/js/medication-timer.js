@@ -46,6 +46,24 @@ function initializePage() {
   document
     .getElementById("darkModeToggle")
     .addEventListener("click", toggleDarkMode);
+
+  // Add sync code button listeners
+  document
+    .getElementById("generateSyncCode")
+    .addEventListener("click", generateSyncCode);
+  document.getElementById("applySyncCode").addEventListener("click", () => {
+    const code = document.getElementById("syncCodeInput").value;
+    if (code.length === SYNC_CODE_LENGTH) {
+      applySyncCode(code);
+    } else {
+      showError("Please enter a valid 6-character sync code");
+    }
+  });
+
+  // Add input listener for sync code field
+  document.getElementById("syncCodeInput").addEventListener("input", (e) => {
+    e.target.value = e.target.value.toUpperCase();
+  });
 }
 
 // Form Handling Functions
@@ -196,10 +214,13 @@ function resetProgressBar() {
   progressLabel.textContent = "0%";
 
   // Save progress bar state to localStorage
-  localStorage.setItem("progressBarState", JSON.stringify({
-    progress: 0,
-    breakProgress: 0,
-  }));
+  localStorage.setItem(
+    "progressBarState",
+    JSON.stringify({
+      progress: 0,
+      breakProgress: 0,
+    })
+  );
 }
 
 function updateProgressBar(startTime, totalDurationInHours) {
@@ -227,10 +248,13 @@ function updateProgressBar(startTime, totalDurationInHours) {
       progressLabel.textContent = `${Math.round(progressPercentage)}%`;
 
       // Save progress bar state to localStorage
-      localStorage.setItem("progressBarState", JSON.stringify({
-        progress: progressPercentage,
-        breakProgress: 0, // Assuming break progress is 0 for now
-      }));
+      localStorage.setItem(
+        "progressBarState",
+        JSON.stringify({
+          progress: progressPercentage,
+          breakProgress: 0, // Assuming break progress is 0 for now
+        })
+      );
 
       if (now >= end) {
         progressBar.style.background = "var(--progress-expired-color)";
@@ -275,7 +299,6 @@ document.addEventListener("DOMContentLoaded", () => {
     progressLabel.textContent = `${Math.round(progress)}%`;
   }
 });
-
 
 // Local Storage Functions
 function saveToLocalStorage(data) {
@@ -374,12 +397,16 @@ function generateSyncCode() {
     // Show the code to the user
     const resultContainer = document.getElementById("result");
     resultContainer.innerHTML += `
-            <div class="sync-code-container">
-                <p>Share this code to sync your timing:</p>
-                <div class="sync-code">${code}</div>
-                <p>Code expires in ${SYNC_EXPIRY_HOURS} hours</p>
-            </div>
-        `;
+          <div class="sync-code-container">
+              <p>Share this code to sync your timing:</p>
+              <div class="sync-code">${code}</div>
+              <p>Code expires in ${SYNC_EXPIRY_HOURS} hours</p>
+          </div>
+      `;
+
+    // Log the stored code for debugging
+    console.log("Generated code:", code);
+    console.log("Stored data:", JSON.stringify(data));
 
     // Clean up old sync codes
     cleanupOldSyncCodes();
@@ -390,7 +417,20 @@ function generateSyncCode() {
 }
 
 function applySyncCode(code) {
-  const syncData = localStorage.getItem(`sync_${code.toUpperCase()}`);
+  // Normalize the code to uppercase and trim any whitespace
+  const normalizedCode = code.trim().toUpperCase();
+  console.log("Attempting to apply code:", normalizedCode);
+
+  // Debug: List all sync codes in localStorage
+  console.log(
+    "Available sync codes:",
+    Object.keys(localStorage).filter((key) => key.startsWith("sync_"))
+  );
+
+  const syncKey = `sync_${normalizedCode}`;
+  const syncData = localStorage.getItem(syncKey);
+
+  console.log("Retrieved data for key:", syncKey, syncData);
 
   if (!syncData) {
     showError("Invalid sync code. Please try again.");
@@ -402,15 +442,18 @@ function applySyncCode(code) {
 
     // Check if code has expired
     if (Date.now() > data.expires) {
-      localStorage.removeItem(`sync_${code.toUpperCase()}`);
+      localStorage.removeItem(syncKey);
       showError("This sync code has expired. Please request a new one.");
       return;
     }
 
     // Apply the synced settings
-    document.getElementById("medication").value = data.medication;
-    document.getElementById("startTime").value = data.startTime;
-    document.getElementById("breakTime").value = data.breakTime;
+    if (data.medication)
+      document.getElementById("medication").value = data.medication;
+    if (data.startTime)
+      document.getElementById("startTime").value = data.startTime;
+    if (data.breakTime)
+      document.getElementById("breakTime").value = data.breakTime;
 
     // Update UI based on synced settings
     handleMedicationChange();
