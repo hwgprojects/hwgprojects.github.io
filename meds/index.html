@@ -146,7 +146,7 @@
       document
         .getElementById("generateSyncCode")
         .addEventListener("click", generateSyncCode);
-      console.log(clickie);
+      console.log("clickie");
       document.getElementById("applySyncCode").addEventListener("click", () => {
         const code = document.getElementById("syncCodeInput").value;
         if (code.length === SYNC_CODE_LENGTH) {
