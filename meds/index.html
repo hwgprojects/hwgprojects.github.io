@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADHD Medication Timing Calculator</title>
+    <script src="js/medication-timer.js"></script>
+    <link rel="stylesheet" href="css/theme.css" />
+    <script>
+      // Set dark mode on page load before rendering
+      if (localStorage.getItem("darkMode") === "enabled") {
+        document.documentElement.classList.add("dark-mode");
+      }
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Add favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon.png" />
+  </head>
+  <body onload="initializePage()">
+    <div class="container">
+      <div class="progress-bar">
+        <div class="progress"></div>
+        <div class="break-progress"></div>
+        <div class="progress-label">0%</div>
+      </div>
+      <h1>ADHD Medication Timing</h1>
+      <div id="medForm">
+        <label for="medication">Select Medication:</label>
+        <select
+          id="medication"
+          name="medication"
+          aria-label="Select Medication"
+          onchange="handleMedicationChange()"
+        >
+          <option value="elvanse">Elvanse® 60mg</option>
+          <option value="amfexa">Amfexa® 10mg</option>
+          <option value="both">Calculate Both</option>
+        </select>
+        <br /><br />
+        <label for="startTime">Enter Start Time (HH:MM format):</label>
+        <input
+          type="time"
+          id="startTime"
+          name="startTime"
+          aria-label="Start Time"
+        />
+        <button type="button" id="insertCurrentTime" style="margin-left: 10px">
+          Insert Current Time
+        </button>
+        <br /><br />
+        <div id="break-container" style="display: none">
+          <label
+            ><input
+              type="checkbox"
+              id="toggle-break"
+              onclick="toggleBreakSettings()"
+            />
+            Include Break Time</label
+          >
+          <div id="advanced-settings" style="display: none">
+            <label for="breakTime"
+              >Break Time (minutes, only if both meds):</label
+            >
+            <input
+              type="number"
+              id="breakTime"
+              name="breakTime"
+              aria-label="Break Time"
+              min="0"
+              value="0"
+            />
+          </div>
+        </div>
+        <br />
+        <button type="button" id="calculateButton" class="animated-button">
+          Calculate
+        </button>
+        <button type="button" id="resetButton" class="reset-button">
+          Reset
+        </button>
+        <button id="darkModeToggle">Toggle Dark Mode</button>
+      </div>
+      <div id="result" class="result" style="font-size: 1.25rem"></div>
+      <div class="footer">
+        <img src="imgs/me.jpg" alt="Profile Picture" />
+        <div>
+          <p style="margin: 0">Made with 🚀 by HWG & Generative AI | v0.4.3</p>
+        </div>
+      </div>
+      <div class="sync-container"></div>
+        <h3>Sync Across Devices</h3>
+        <div class="sync-controls">
+          <div class="sync-input-group">
+            <input
+              type="text"
+              id="syncCodeInput"
+              placeholder="Enter sync code"
+              maxlength="6"
+              pattern="[A-Za-z0-9]{6}"
+              autocomplete="off"
+            />
+            <button id="generateSyncCode" class="sync-button">
+              Generate Sync Code
+            </button>
+            <button id="applySyncCode" class="sync-button">Apply Code</button>
+          </div>
+        </div>
+      </div>
+      <!--label class="toggle-dark-mode">
+        <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()"
+        ${localStorage.getItem("darkMode") === "enabled" ? 'checked' : ''}>
+        <span class="slider"></span>
+      </label-->
+    </div>
+    <div
+      id="advanced-stats"
+      style="
+        font-size: 0.7rem;
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        text-align: left;
+      "
+    >
+      <strong>Advanced Stats:</strong><br />
+      Date/Time LocalStorage Last Updated: <span id="localStorageUpdated"></span
+      ><br />
+      Current Date/Time: <span id="currentDateTime"></span><br />
+      Date/Time Page Last Accessed: <span id="lastAccessed"></span><br />
+      <a
+        href="#"
+        onclick="clearLocalStorage()"
+        style="
+          font-size: 0.7rem;
+          color: red;
+          cursor: pointer;
+          text-decoration: none;
+        "
+        >Clear LocalStorage</a
+      >
+    </div>
+    <script>
+      document
+        .getElementById("generateSyncCode")
+        .addEventListener("click", generateSyncCode);
+      console.log(clickie);
+      document.getElementById("applySyncCode").addEventListener("click", () => {
+        const code = document.getElementById("syncCodeInput").value;
+        if (code.length === SYNC_CODE_LENGTH) {
+          applySyncCode(code);
+        } else {
+          showError("Please enter a valid 6-character sync code");
+        }
+      });
+    </script>
+  </body>
+</html>
