@@ -90,25 +90,23 @@
           <p style="margin: 0">Made with 🚀 by HWG & Generative AI | v0.4.6</p>
         </div>
       </div>
-      <div class="sync-container"></div>
+      <div class="sync-container">
         <h3>Sync Across Devices</h3>
         <div class="sync-controls">
-          <div class="sync-input-group">
-            <input
-              type="text"
-              id="syncCodeInput"
-              placeholder="Enter sync code"
-              maxlength="6"
-              pattern="[A-Za-z0-9]{6}"
-              autocomplete="off"
-            />
             <button id="generateSyncCode" class="sync-button">
-              Generate Sync Code
+                Generate Sync Code
             </button>
-            <button id="applySyncCode" class="sync-button">Apply Code</button>
-          </div>
+            <div class="sync-input-group">
+                <input type="text" 
+                       id="syncCodeInput" 
+                       placeholder="Paste sync code here"
+                       autocomplete="off">
+                <button id="applySyncCode" class="sync-button">
+                    Apply Code
+                </button>
+            </div>
         </div>
-      </div>
+    </div>
       <!--label class="toggle-dark-mode">
         <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()"
         ${localStorage.getItem("darkMode") === "enabled" ? 'checked' : ''}>

@@ -17,6 +17,8 @@ const MEDICATIONS = {
 const SYNC_CODE_LENGTH = 6;
 const SYNC_EXPIRY_HOURS = 24;
 
+const SYNC_CODE_VERSION = 1; // For future compatibility
+
 // Event Listeners
 document.addEventListener("DOMContentLoaded", initializePage);
 window.addEventListener("beforeunload", () => {
@@ -48,17 +50,15 @@ function initializePage() {
     .addEventListener("click", toggleDarkMode);
 
   // Add sync code button listeners
-  document
-    .getElementById("generateSyncCode")
-    .addEventListener("click", generateSyncCode);
-  document.getElementById("applySyncCode").addEventListener("click", () => {
-    const code = document.getElementById("syncCodeInput").value;
-    if (code.length === SYNC_CODE_LENGTH) {
-      applySyncCode(code);
-    } else {
-      showError("Please enter a valid 6-character sync code");
-    }
-  });
+  document.getElementById('generateSyncCode').addEventListener('click', generateSyncCode);
+    document.getElementById('applySyncCode').addEventListener('click', () => {
+        const code = document.getElementById('syncCodeInput').value;
+        if (code.trim().length > 0) {
+            applySyncCode(code);
+        } else {
+            showError("Please enter a sync code");
+        }
+    });
 
   // Add input listener for sync code field
   document.getElementById("syncCodeInput").addEventListener("input", (e) => {
@@ -101,6 +101,15 @@ function resetForm() {
   document.getElementById("result").innerHTML = "";
   resetProgressBar();
   handleMedicationChange();
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+      showSuccess("Code copied to clipboard!");
+  }).catch(err => {
+      console.error('Failed to copy:', err);
+      showError("Failed to copy code. Please copy it manually.");
+  });
 }
 
 // Core Calculation Functions
@@ -378,91 +387,73 @@ function loadLocalStorageData() {
 }
 
 function generateSyncCode() {
-  const timestamp = Date.now();
-  const data = {
-    medication: document.getElementById("medication").value,
-    startTime: document.getElementById("startTime").value,
-    breakTime: document.getElementById("breakTime").value,
-    timestamp: timestamp,
-    expires: timestamp + SYNC_EXPIRY_HOURS * 60 * 60 * 1000,
-  };
-
-  // Generate a random 6-character code
-  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-
   try {
-    // Store in localStorage with the code as key
-    localStorage.setItem(`sync_${code}`, JSON.stringify(data));
-
-    // Show the code to the user
-    const resultContainer = document.getElementById("result");
-    resultContainer.innerHTML += `
+      // Get current settings
+      const data = {
+          v: SYNC_CODE_VERSION,
+          m: document.getElementById("medication").value,
+          t: document.getElementById("startTime").value,
+          b: document.getElementById("breakTime").value || "0",
+          e: Date.now() + (24 * 60 * 60 * 1000) // 24 hour expiry
+      };
+      
+      // Convert to base64
+      const encoded = btoa(JSON.stringify(data));
+      
+      // Show the code to the user
+      const resultContainer = document.getElementById("result");
+      resultContainer.innerHTML += `
           <div class="sync-code-container">
               <p>Share this code to sync your timing:</p>
-              <div class="sync-code">${code}</div>
-              <p>Code expires in ${SYNC_EXPIRY_HOURS} hours</p>
+              <div class="sync-code">${encoded}</div>
+              <p>Code expires in 24 hours</p>
+              <button class="sync-button copy-button" onclick="copyToClipboard('${encoded}')">
+                  Copy Code
+              </button>
           </div>
       `;
-
-    // Log the stored code for debugging
-    console.log("Generated code:", code);
-    console.log("Stored data:", JSON.stringify(data));
-
-    // Clean up old sync codes
-    cleanupOldSyncCodes();
+      
+      console.log('Generated sync data:', data);
+      console.log('Generated code:', encoded);
   } catch (error) {
-    console.warn("Failed to generate sync code:", error);
-    showError("Failed to generate sync code. LocalStorage might be full.");
+      console.error("Failed to generate sync code:", error);
+      showError("Failed to generate sync code.");
   }
 }
 
 function applySyncCode(code) {
-  // Normalize the code to uppercase and trim any whitespace
-  const normalizedCode = code.trim().toUpperCase();
-  console.log("Attempting to apply code:", normalizedCode);
-
-  // Debug: List all sync codes in localStorage
-  console.log(
-    "Available sync codes:",
-    Object.keys(localStorage).filter((key) => key.startsWith("sync_"))
-  );
-
-  const syncKey = `sync_${normalizedCode}`;
-  const syncData = localStorage.getItem(syncKey);
-
-  console.log("Retrieved data for key:", syncKey, syncData);
-
-  if (!syncData) {
-    showError("Invalid sync code. Please try again.");
-    return;
-  }
-
   try {
-    const data = JSON.parse(syncData);
-
-    // Check if code has expired
-    if (Date.now() > data.expires) {
-      localStorage.removeItem(syncKey);
-      showError("This sync code has expired. Please request a new one.");
-      return;
-    }
-
-    // Apply the synced settings
-    if (data.medication)
-      document.getElementById("medication").value = data.medication;
-    if (data.startTime)
-      document.getElementById("startTime").value = data.startTime;
-    if (data.breakTime)
-      document.getElementById("breakTime").value = data.breakTime;
-
-    // Update UI based on synced settings
-    handleMedicationChange();
-    calculateTimes();
-
-    showSuccess("Settings successfully synced!");
+      console.log('Attempting to apply code:', code);
+      
+      // Decode the base64 string
+      const decoded = JSON.parse(atob(code.trim()));
+      console.log('Decoded data:', decoded);
+      
+      // Version check
+      if (decoded.v !== SYNC_CODE_VERSION) {
+          showError("This sync code is from an incompatible version.");
+          return;
+      }
+      
+      // Check expiry
+      if (Date.now() > decoded.e) {
+          showError("This sync code has expired. Please request a new one.");
+          return;
+      }
+      
+      // Apply the settings
+      document.getElementById("medication").value = decoded.m;
+      document.getElementById("startTime").value = decoded.t;
+      document.getElementById("breakTime").value = decoded.b;
+      
+      // Update UI
+      handleMedicationChange();
+      calculateTimes();
+      
+      showSuccess("Settings successfully synced!");
   } catch (error) {
-    console.error("Failed to apply sync code:", error);
-    showError("Failed to apply sync code. Please try again.");
+      console.error("Failed to apply sync code:", error);
+      showError("Invalid sync code. Please make sure you copied the entire code.");
   }
 }
 
