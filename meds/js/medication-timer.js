@@ -182,7 +182,7 @@ function showError(message) {
   resultContainer.innerHTML = `<div class="error-message">${message}</div>`;
 }
 
-// Progress Bar Functions
+// Progress Bar Functions updated by GPT-4o
 function resetProgressBar() {
   const progressBar = document.querySelector(".progress-bar .progress");
   const breakProgressBar = document.querySelector(
@@ -194,6 +194,12 @@ function resetProgressBar() {
   progressBar.style.background = "var(--progress-color)";
   breakProgressBar.style.width = "0%";
   progressLabel.textContent = "0%";
+
+  // Save progress bar state to localStorage
+  localStorage.setItem("progressBarState", JSON.stringify({
+    progress: 0,
+    breakProgress: 0,
+  }));
 }
 
 function updateProgressBar(startTime, totalDurationInHours) {
@@ -220,6 +226,12 @@ function updateProgressBar(startTime, totalDurationInHours) {
       progressBar.style.width = `${progressPercentage}%`;
       progressLabel.textContent = `${Math.round(progressPercentage)}%`;
 
+      // Save progress bar state to localStorage
+      localStorage.setItem("progressBarState", JSON.stringify({
+        progress: progressPercentage,
+        breakProgress: 0, // Assuming break progress is 0 for now
+      }));
+
       if (now >= end) {
         progressBar.style.background = "var(--progress-expired-color)";
         if (window.progressInterval) clearInterval(window.progressInterval);
@@ -244,6 +256,26 @@ function updateProgressBar(startTime, totalDurationInHours) {
     if (window.progressInterval) clearInterval(window.progressInterval);
   }
 }
+
+// Load Progress Bar State from localStorage
+document.addEventListener("DOMContentLoaded", () => {
+  const savedProgressBarState = localStorage.getItem("progressBarState");
+  if (savedProgressBarState) {
+    const { progress, breakProgress } = JSON.parse(savedProgressBarState);
+    const progressBar = document.querySelector(".progress-bar .progress");
+    const breakProgressBar = document.querySelector(
+      ".progress-bar .break-progress"
+    );
+    const progressLabel = document.querySelector(
+      ".progress-bar .progress-label"
+    );
+
+    progressBar.style.width = `${progress}%`;
+    breakProgressBar.style.width = `${breakProgress}%`;
+    progressLabel.textContent = `${Math.round(progress)}%`;
+  }
+});
+
 
 // Local Storage Functions
 function saveToLocalStorage(data) {
