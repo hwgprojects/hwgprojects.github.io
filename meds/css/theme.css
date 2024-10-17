@@ -258,9 +258,9 @@ body.dark-mode .result {
 }
 
 .sync-code {
-  font-size: 2rem;
+  font-size: 1rem;
   font-weight: bold;
-  letter-spacing: 0.5rem;
+  /*letter-spacing: 0.1rem;*/
   margin: 1rem 0;
   color: #2196f3;
 }

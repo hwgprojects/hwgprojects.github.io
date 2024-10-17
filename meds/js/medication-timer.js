@@ -50,15 +50,17 @@ function initializePage() {
     .addEventListener("click", toggleDarkMode);
 
   // Add sync code button listeners
-  document.getElementById('generateSyncCode').addEventListener('click', generateSyncCode);
-    document.getElementById('applySyncCode').addEventListener('click', () => {
-        const code = document.getElementById('syncCodeInput').value;
-        if (code.trim().length > 0) {
-            applySyncCode(code);
-        } else {
-            showError("Please enter a sync code");
-        }
-    });
+  document
+    .getElementById("generateSyncCode")
+    .addEventListener("click", generateSyncCode);
+  document.getElementById("applySyncCode").addEventListener("click", () => {
+    const code = document.getElementById("syncCodeInput").value;
+    if (code.trim().length > 0) {
+      applySyncCode(code);
+    } else {
+      showError("Please enter a sync code");
+    }
+  });
 
   // Add input listener for sync code field
   document.getElementById("syncCodeInput").addEventListener("input", (e) => {
@@ -104,12 +106,15 @@ function resetForm() {
 }
 
 function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
       showSuccess("Code copied to clipboard!");
-  }).catch(err => {
-      console.error('Failed to copy:', err);
+    })
+    .catch((err) => {
+      console.error("Failed to copy:", err);
       showError("Failed to copy code. Please copy it manually.");
-  });
+    });
 }
 
 // Core Calculation Functions
@@ -388,36 +393,37 @@ function loadLocalStorageData() {
 
 function generateSyncCode() {
   try {
-      // Get current settings
-      const data = {
-          v: SYNC_CODE_VERSION,
-          m: document.getElementById("medication").value,
-          t: document.getElementById("startTime").value,
-          b: document.getElementById("breakTime").value || "0",
-          e: Date.now() + (24 * 60 * 60 * 1000) // 24 hour expiry
-      };
-      
-      // Convert to base64
-      const encoded = btoa(JSON.stringify(data));
-      
-      // Show the code to the user
-      const resultContainer = document.getElementById("result");
-      resultContainer.innerHTML += `
-          <div class="sync-code-container">
-              <p>Share this code to sync your timing:</p>
-              <div class="sync-code">${encoded}</div>
-              <p>Code expires in 24 hours</p>
-              <button class="sync-button copy-button" onclick="copyToClipboard('${encoded}')">
-                  Copy Code
-              </button>
-          </div>
-      `;
-      
-      console.log('Generated sync data:', data);
-      console.log('Generated code:', encoded);
+    // Get current settings
+    const data = {
+      v: SYNC_CODE_VERSION,
+      m: document.getElementById("medication").value,
+      t: document.getElementById("startTime").value,
+      b: document.getElementById("breakTime").value || "0",
+      e: Date.now() + 24 * 60 * 60 * 1000,
+    };
+
+    // Convert to string and encode safely
+    const jsonString = JSON.stringify(data);
+    const encoded = btoa(encodeURIComponent(jsonString));
+
+    // Show the code to the user
+    const resultContainer = document.getElementById("result");
+    resultContainer.innerHTML += `
+            <div class="sync-code-container">
+                <p>Share this code to sync your timing:</p>
+                <div class="sync-code">${encoded}</div>
+                <p>Code expires in 24 hours</p>
+                <button class="sync-button copy-button" onclick="copyToClipboard('${encoded}')">
+                    Copy Code
+                </button>
+            </div>
+        `;
+
+    console.log("Generated sync data:", data);
+    console.log("Generated code:", encoded);
   } catch (error) {
-      console.error("Failed to generate sync code:", error);
-      showError("Failed to generate sync code.");
+    console.error("Failed to generate sync code:", error);
+    showError("Failed to generate sync code.");
   }
 }
 
@@ -425,8 +431,8 @@ function applySyncCode(code) {
   try {
       console.log('Attempting to apply code:', code);
       
-      // Decode the base64 string
-      const decoded = JSON.parse(atob(code.trim()));
+      // Decode the base64 string safely
+      const decoded = JSON.parse(decodeURIComponent(atob(code.trim())));
       console.log('Decoded data:', decoded);
       
       // Version check
