@@ -54,11 +54,16 @@ function initializePage() {
     .getElementById("generateSyncCode")
     .addEventListener("click", generateSyncCode);
   document.getElementById("applySyncCode").addEventListener("click", () => {
-    const code = document.getElementById("syncCodeInput").value;
-    if (code.trim().length > 0) {
+    const code = document
+      .getElementById("syncCodeInput")
+      .value.trim()
+      .toUpperCase();
+    if (code.length === SYNC_CODE_LENGTH) {
       applySyncCode(code);
     } else {
-      showError("Please enter a sync code");
+      showError(
+        `Please enter a valid ${SYNC_CODE_LENGTH}-character sync code`
+      );
     }
   });
 
