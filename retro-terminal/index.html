@@ -6,7 +6,7 @@
   <title>Retro Terminal Experience</title>
   <link rel="stylesheet" href="./css/retro-terminal.css">
 </head>
-<body data-theme="green">
+<body class="retro-terminal" data-theme="green">
   <div class="crt">
     <div class="overlay overlay--scanlines"></div>
     <div class="overlay overlay--vignette"></div>
@@ -16,7 +16,7 @@
         <span class="terminal__led terminal__led--red"></span>
         <span class="terminal__led terminal__led--yellow"></span>
         <span class="terminal__led terminal__led--green"></span>
-        <p class="terminal__title">COOL RETRO TERMINAL v1.0</p>
+        <p class="terminal__title">Cool Retro Terminal v1.0</p>
         <div class="terminal__controls" role="group" aria-label="Theme selector">
           <button class="terminal__theme-button" type="button" data-theme="green" aria-pressed="true">
             <span class="sr-only">Phosphor green theme</span>
@@ -33,7 +33,7 @@
         <div class="terminal__output" id="terminal-output" aria-label="Terminal output"></div>
         <form class="terminal__prompt" id="terminal-form" autocomplete="off">
           <label class="sr-only" for="terminal-input">Terminal input</label>
-          <span class="terminal__path" data-terminal-path>C:\RETRO&gt;</span>
+          <span class="terminal__path" data-terminal-path>C:\retro&gt;</span>
           <input
             id="terminal-input"
             class="terminal__input"
