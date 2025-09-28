@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retro Terminal Experience</title>
+  <link rel="stylesheet" href="retro-terminal/css/retro-terminal.css">
+</head>
+<body data-theme="green">
+  <div class="crt">
+    <div class="overlay overlay--scanlines"></div>
+    <div class="overlay overlay--vignette"></div>
+    <div class="overlay overlay--glow"></div>
+    <main class="terminal" role="main" aria-live="polite">
+      <header class="terminal__header">
+        <span class="terminal__led terminal__led--red"></span>
+        <span class="terminal__led terminal__led--yellow"></span>
+        <span class="terminal__led terminal__led--green"></span>
+        <p class="terminal__title">COOL RETRO TERMINAL v1.0</p>
+        <div class="terminal__controls" role="group" aria-label="Theme selector">
+          <button class="terminal__theme-button" type="button" data-theme="green" aria-pressed="true">
+            <span class="sr-only">Phosphor green theme</span>
+          </button>
+          <button class="terminal__theme-button" type="button" data-theme="amber" aria-pressed="false">
+            <span class="sr-only">Amber monochrome theme</span>
+          </button>
+          <button class="terminal__theme-button" type="button" data-theme="blue" aria-pressed="false">
+            <span class="sr-only">Icy blue theme</span>
+          </button>
+        </div>
+      </header>
+      <section class="terminal__viewport">
+        <div class="terminal__output" id="terminal-output" aria-label="Terminal output"></div>
+        <form class="terminal__prompt" id="terminal-form" autocomplete="off">
+          <label class="sr-only" for="terminal-input">Terminal input</label>
+          <span class="terminal__path" data-terminal-path>C:\RETRO&gt;</span>
+          <input
+            id="terminal-input"
+            class="terminal__input"
+            type="text"
+            name="terminal-input"
+            spellcheck="false"
+            autocapitalize="none"
+            autocomplete="off"
+            autocorrect="off"
+            aria-label="Type commands here"
+          />
+        </form>
+      </section>
+    </main>
+  </div>
+  <script src="retro-terminal/js/retro-terminal.js" defer></script>
+</body>
+</html>
