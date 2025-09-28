@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retro Terminal Experience</title>
+  <link rel="stylesheet" href="css/retro-terminal.css">
+</head>
+<body>
+  <div class="crt">
+    <div class="overlay overlay--scanlines"></div>
+    <div class="overlay overlay--vignette"></div>
+    <div class="overlay overlay--glow"></div>
+    <main class="terminal" role="main" aria-live="polite">
+      <header class="terminal__header">
+        <span class="terminal__led terminal__led--red"></span>
+        <span class="terminal__led terminal__led--yellow"></span>
+        <span class="terminal__led terminal__led--green"></span>
+        <p class="terminal__title">COOL RETRO TERMINAL v1.0</p>
+      </header>
+      <section class="terminal__viewport">
+        <div class="terminal__output" id="terminal-output" aria-label="Terminal output"></div>
+        <div class="terminal__prompt">
+          <span class="terminal__path">C:\\RETRO&gt;</span>
+          <span class="terminal__cursor" aria-hidden="true"></span>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="js/retro-terminal.js" defer></script>
+</body>
+</html>
